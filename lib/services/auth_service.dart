@@ -30,4 +30,10 @@ class AuthService {
     await _googleSignIn.signOut();
     await _auth.signOut();
   }
+
+  // Getter pour obtenir l'utilisateur actuel
+  User? get currentUser => _auth.currentUser;
+
+  // Getter pour obtenir l'ID de l'utilisateur actuel
+  String? get currentUserId => _auth.currentUser?.uid;
 }
