@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'services/auth_service.dart';
 import 'package:mentor_quiz/create_quiz_page.dart';
-import 'package:mentor_quiz/join_quiz_page.dart'; // Assuming you have this page
+import 'package:mentor_quiz/join_quiz_page.dart';
 
 class HomePage extends StatelessWidget {
   final AuthService _authService = AuthService();
@@ -25,7 +25,7 @@ class HomePage extends StatelessWidget {
                   Image.asset('assets/images/isi.svg', width: 100), // Replace with your app logo
                   SizedBox(width: 10),
                   Text(
-                    'Quiz Mentor',
+                    'Mentor Quiz',
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Text(
-                '© 2025 Quiz Mentor - All rights reserved.',
+                '© 2025 Mentor Quiz - All rights reserved.',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey,

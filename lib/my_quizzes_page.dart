@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'quiz_edit_page.dart';
 
 class MyQuizzesPage extends StatefulWidget {
   @override
@@ -8,10 +9,8 @@ class MyQuizzesPage extends StatefulWidget {
 }
 
 class _MyQuizzesPageState extends State<MyQuizzesPage> {
-  // List to hold the quizzes
   List<Map<String, dynamic>> _quizzes = [];
 
-  // Fetch quizzes from Firestore
   void _fetchQuizzes() async {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
@@ -23,9 +22,8 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
 
         setState(() {
           _quizzes = quizData.docs.map((doc) {
-            // Convert Firestore document data into a Map
             var data = doc.data();
-            // Ensure createdAt is a Firestore Timestamp
+            data['id'] = doc.id; // Store document ID
             data['createdAt'] = data['createdAt']?.toDate();
             return data;
           }).toList();
@@ -41,16 +39,13 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
   @override
   void initState() {
     super.initState();
-    _fetchQuizzes(); // Fetch quizzes when the page is loaded
+    _fetchQuizzes();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Mes Quizs"),
-        backgroundColor: Colors.blue,
-      ),
+      appBar: AppBar(title: Text("My Quizzes"), backgroundColor: Colors.blue),
       body: _quizzes.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -61,10 +56,14 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
                   margin: EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text(quiz['title'] ?? 'Untitled Quiz'),
-                    subtitle: Text("Créé le: ${quiz['createdAt'] ?? 'N/A'}"),
+                    subtitle: Text("Created on: ${quiz['createdAt'] ?? 'N/A'}"),
                     onTap: () {
-                      // Navigate to the quiz detail page (you can create one for this)
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => QuizDetailPage(quiz: quiz)));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QuizEditPage(quizId: quiz['id']),
+                        ),
+                      );
                     },
                   ),
                 );

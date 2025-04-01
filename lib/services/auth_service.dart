@@ -37,3 +37,4 @@ class AuthService {
   // Getter pour obtenir l'ID de l'utilisateur actuel
   String? get currentUserId => _auth.currentUser?.uid;
 }
+
