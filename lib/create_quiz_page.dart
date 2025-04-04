@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:mentor_quiz/my_quizzes_page.dart';
 import 'services/quiz_service.dart';
 
@@ -10,7 +11,7 @@ class CreateQuizPage extends StatefulWidget {
 
 class _CreateQuizPageState extends State<CreateQuizPage> {
   final TextEditingController _quizTitleController = TextEditingController();
-  final List<Map<String, dynamic>> _slides = [];
+  final List<Map<String, dynamic>> _slides = []; // Liste des slides du quiz
   final QuizService quizService = QuizService();
   int _selectedSlideIndex = -1; // Indice du slide sélectionné, -1 signifie aucun
   bool _showThemesPanel = false; // Pour afficher le panneau des thèmes
@@ -24,14 +25,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     'assets/images/themes/theme4.jpg',
     'assets/images/themes/theme5.jpg',
   ];
-<<<<<<< HEAD
   // Fonction pour ajouter un slide
  void _showQuestionTypeDialog() {
-=======
-
-  // Fonction pour ouvrir la boîte de dialogue de sélection du type de question
-  void _showQuestionTypeDialog() {
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -113,27 +108,43 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       if (_selectedSlideIndex >= _slides.length) {
         _selectedSlideIndex = _slides.isEmpty ? -1 : _slides.length - 1;
       }
-<<<<<<< HEAD
 
 
-=======
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
     });
   }
 
   // Fonction pour sauvegarder le quiz
   Future<void> _saveQuiz() async {
-    // Code pour sauvegarder le quiz...
-    print("Quiz sauvegardé");
-  }
+    try {
+      // Récupérer l'ID de l'utilisateur
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
 
-  // Fonction pour appliquer le thème sélectionné au slide actuel
-  void _applyThemeToCurrentSlide(String imagePath) {
-    if (_selectedSlideIndex >= 0 && _selectedSlideIndex < _slides.length) {
-      setState(() {
-        _slides[_selectedSlideIndex]["backgroundImage"] = imagePath;
-        _selectedBackgroundImage = imagePath; // Mettre à jour l'image sélectionnée
-      });
+      // Vérifier si l'utilisateur est connecté
+      if (userId != null) {
+        // Sauvegarder le quiz avec l'ID de l'utilisateur
+        await quizService.saveQuiz(_quizTitleController.text, _slides, userId);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Quiz sauvegardé avec succès!")),
+        );
+
+        // Naviguer vers la page des quiz de l'utilisateur après l'enregistrement
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MyQuizzesPage()), // Naviguer vers la page des quiz de l'utilisateur
+        );
+
+      } else {
+        // Si l'utilisateur n'est pas connecté
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erreur : utilisateur non connecté.")),
+        );
+      }
+    } catch (e) {
+      // Gérer les erreurs
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors de la sauvegarde: $e")),
+      );
     }
   }
     void _applyThemeToCurrentSlide(String imagePath) {
@@ -149,12 +160,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     return Scaffold(
       backgroundColor: Colors.white, 
       appBar: AppBar(
-<<<<<<< HEAD
       title: Row(
-=======
-        backgroundColor: Colors.white, // Couleur de fond de l'AppBar
-        title: Row(
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
           children: [
             // Logo de l'application
             Container(
@@ -215,16 +221,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
               ),
             ),
           ),
-<<<<<<< HEAD
         ],),
         body: Row(
           children: [
-=======
-        ],
-      ),
-      body: Row(
-        children: [
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
           // Partie gauche - Liste des slides
           Container(
             width: 300,
@@ -310,14 +309,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                 ),
               ],
             ),
-<<<<<<< HEAD
             ),
             // Partie centrale (Contenu du slide sélectionné)
-=======
-          ),
-
-          // Partie centrale (Contenu du slide sélectionné)
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
           Expanded(
             child: Container(
               padding: EdgeInsets.all(16.0),
@@ -383,11 +376,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                                     ? Colors.white.withOpacity(0.7)
                                     : Colors.pink[50],
                                 elevation: 2,
-<<<<<<< HEAD
                                  child: Padding(
-=======
-                                child: Padding(
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,7 +465,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                                                   ),
                                                 ),
                                               ],
-<<<<<<< HEAD
                                             ),
                                     ],
                                   ),
@@ -562,111 +550,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                                           image: DecorationImage(
                                             image: AssetImage(imagePath),
                                             fit: BoxFit.cover,
-=======
-                                            ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                    )
-                  : Center(
-                      child: Text(
-                        "Aucun slide sélectionné. Créez un nouveau slide ou sélectionnez un existant.",
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-            ),
-          ),
-
-          // Partie droite (Temps et Points ou Thèmes)
-          Container(
-            width: 250,
-            padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              border: Border(
-                left: BorderSide(color: Colors.grey[300]!, width: 1),
-              ),
-            ),
-            child: _showThemesPanel 
-                ? // Afficher le panneau des thèmes
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Thèmes disponibles",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        "Sélectionnez un arrière-plan pour votre slide:",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 10),
-                      Expanded(
-                        child: GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: 1.0,
-                          ),
-                          itemCount: _backgroundImages.length + 1, // +1 pour l'option "Pas de thème"
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              // Option pour enlever le thème
-                              return GestureDetector(
-                                onTap: () => _applyThemeToCurrentSlide(''),
-                                child: Card(
-                                  color: Colors.white,
-                                  elevation: 2,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.block, size: 40, color: Colors.grey),
-                                      SizedBox(height: 8),
-                                      Text("Pas de thème", textAlign: TextAlign.center),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            } else {
-                              String imagePath = _backgroundImages[index - 1];
-                              return GestureDetector(
-                                onTap: () => _applyThemeToCurrentSlide(imagePath),
-                                child: Card(
-                                  elevation: 2,
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(4),
-                                          image: DecorationImage(
-                                            image: AssetImage(imagePath),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      if (_selectedBackgroundImage == imagePath)
-                                        Positioned(
-                                          right: 8,
-                                          top: 8,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.check_circle,
-                                              color: Colors.green,
-                                              size: 24,
-                                            ),
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
                                           ),
                                         ),
                                       ),
@@ -709,10 +592,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             "Réglages du Slide ${_selectedSlideIndex + 1}",
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-<<<<<<< HEAD
 
-=======
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
                           SizedBox(height: 20),
                           // Affichage du type de question dans les réglages
                           Card(
@@ -916,20 +796,11 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                           textAlign: TextAlign.center,
                         ),
-<<<<<<< HEAD
                       ),  ),
-=======
-                      ),
-          ),
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
         ],
       ),
     );
 
   }
-<<<<<<< HEAD
     }
     
-=======
-}
->>>>>>> bf47149a1fcca063954008df2d1cb7cded7cae0f
