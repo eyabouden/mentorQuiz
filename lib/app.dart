@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'home_page.dart';
 import 'dashboard_page.dart';
 import 'create_quiz_page.dart';
@@ -27,6 +28,8 @@ class MyApp extends StatelessWidget {
         '/create-quiz': (context) => CreateQuizPage(),
         '/join-quiz': (context) => JoinQuizPage(),
       },
+
+      
     );
   }
 }
