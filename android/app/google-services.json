@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "440841514188",
+    "project_id": "mentorquiz-b3740",
+    "storage_bucket": "mentorquiz-b3740.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440841514188:android:d1554220fe4cf9d91fa669",
+        "android_client_info": {
+          "package_name": "com.example.mentor_quiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440841514188-47u38h0br1qqlq44amm6pai731tkrbe7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2n_-V8lJ3yjdST9pDArwmDsZE3HXlfgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "440841514188-47u38h0br1qqlq44amm6pai731tkrbe7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440841514188:android:0e7abf937ccc43651fa669",
+        "android_client_info": {
+          "package_name": "utm.tn.mentorQuiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440841514188-47u38h0br1qqlq44amm6pai731tkrbe7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2n_-V8lJ3yjdST9pDArwmDsZE3HXlfgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "440841514188-47u38h0br1qqlq44amm6pai731tkrbe7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
