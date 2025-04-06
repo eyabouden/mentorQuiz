@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mentor_quiz/my_quizzes_page.dart';
 import 'services/quiz_service.dart';
+import 'widgets/pop_click_enrg.dart';
 
 class CreateQuizPage extends StatefulWidget {
   @override
@@ -11,6 +12,7 @@ class CreateQuizPage extends StatefulWidget {
 
 class _CreateQuizPageState extends State<CreateQuizPage> {
   final TextEditingController _quizTitleController = TextEditingController();
+  
   final List<Map<String, dynamic>> _slides = []; // Liste des slides du quiz
   final QuizService quizService = QuizService();
   int _selectedSlideIndex = -1; // Indice du slide sélectionné, -1 signifie aucun
@@ -114,39 +116,68 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   }
 
   // Fonction pour sauvegarder le quiz
-  Future<void> _saveQuiz() async {
-    try {
-      // Récupérer l'ID de l'utilisateur
-      String? userId = FirebaseAuth.instance.currentUser?.uid;
-
-      // Vérifier si l'utilisateur est connecté
-      if (userId != null) {
-        // Sauvegarder le quiz avec l'ID de l'utilisateur
-        await quizService.saveQuiz(_quizTitleController.text, _slides, userId);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Quiz sauvegardé avec succès!")),
-        );
-
-        // Naviguer vers la page des quiz de l'utilisateur après l'enregistrement
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MyQuizzesPage()), // Naviguer vers la page des quiz de l'utilisateur
-        );
-
-      } else {
-        // Si l'utilisateur n'est pas connecté
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur : utilisateur non connecté.")),
-        );
-      }
-    } catch (e) {
-      // Gérer les erreurs
+Future<void> _saveQuiz() async {
+  try {
+    // Vérifier si l'utilisateur est connecté
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur lors de la sauvegarde: $e")),
+        SnackBar(content: Text("Erreur : utilisateur non connecté.")),
       );
+      return;
     }
+    
+    String userId = currentUser.uid;
+    
+    // Vérifier si le titre du quiz est vide
+    if (_quizTitleController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur : veuillez donner un nom au quiz.")),
+      );
+      return;
+    }
+    
+    // Vérifier s'il y a des slides
+    if (_slides.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur : ajoutez au moins une question.")),
+      );
+      return;
+    }
+    
+    // Sauvegarder le quiz
+    String quizId = await quizService.saveQuiz(_quizTitleController.text, _slides, userId);
+    
+    // Afficher le popup avec l'ID du quiz
+    showDialog(
+      context: context,
+      builder: (context) {
+        return QuizPopup(
+          quizName: _quizTitleController.text,
+          quizId: quizId,
+        );
+      },
+    );
+  } catch (e) {
+    // Gérer les erreurs
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erreur lors de l'enregistrement du quiz : $e")),
+    );
   }
+}
+
+void showQuizPopup(String quizName, String quizId) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return QuizPopup(
+        quizName: quizName,
+        quizId: quizId,
+        // Remove the onStartQuiz parameter as it's not in the QuizPopup constructor
+      );
+    },
+  );
+}
     void _applyThemeToCurrentSlide(String imagePath) {
     if (_selectedSlideIndex >= 0 && _selectedSlideIndex < _slides.length) {
       setState(() {
@@ -388,13 +419,16 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                                             question["question"] = value;
                                           });
                                         },
+                                       
                                         decoration: InputDecoration(
                                           labelText: "Énoncé de la question",
                                           border: OutlineInputBorder(),
                                           filled: true,
                                           fillColor: Colors.white.withOpacity(0.8),
                                         ),
-                                        controller: TextEditingController(text: question["question"]),
+                                        controller: TextEditingController(text: question["question"])..selection = TextSelection.fromPosition(TextPosition(offset: question["question"].length)),
+                                       
+                                         
                                       ),
                                       SizedBox(height: 10),
                                       // Options de réponse en fonction du type de question
@@ -405,6 +439,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                                                   Padding(
                                                     padding: const EdgeInsets.only(bottom: 8.0),
                                                     child: TextField(
+                                                  
                                                       onChanged: (value) {
                                                         setState(() {
                                                           question["option$i"] = value;
@@ -416,7 +451,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                                                         filled: true,
                                                         fillColor: Colors.white.withOpacity(0.8),
                                                       ),
-                                                      controller: TextEditingController(text: question["option$i"]),
+                                                      controller: TextEditingController(text: question["option$i"])
+                                                      ..selection = TextSelection.fromPosition(TextPosition(offset: question["option$i"].length),),
+                                                      
                                                     ),
                                                   ),
                                               ],

@@ -4,24 +4,24 @@ import 'auth_service.dart'; // Importer AuthService
 class QuizService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-   Future<void> saveQuiz(String quizTitle, List<Map<String, dynamic>> slides, String userId) async {
-    try {
-      // Add the quiz data to Firestore
-      DocumentReference docRef = await _db.collection('quizzes').add({
-        'title': quizTitle,
-        'slides': slides, // The slides of the quiz, with dynamic types
-        'userId': userId, // Associate the quiz with the logged-in user
-        'createdAt': FieldValue.serverTimestamp(), // Automatically set the creation time
-      });
+   Future<String> saveQuiz(String quizTitle, List<Map<String, dynamic>> slides, String userId) async {
+  try {
+    // Add the quiz data to Firestore
+    DocumentReference docRef = await _db.collection('quizzes').add({
+      'title': quizTitle,
+      'slides': slides, // The slides of the quiz, with dynamic types
+      'userId': userId, // Associate the quiz with the logged-in user
+      'createdAt': FieldValue.serverTimestamp(), // Automatically set the creation time
+    });
 
-      // Optionally, log the document ID for debugging
-      print('Quiz saved with ID: ${docRef.id}');
-    } catch (e) {
-      // Handle errors
-      print('Error saving the quiz: $e');
-    }
+    // Return the generated quiz ID
+    return docRef.id;
+  } catch (e) {
+    // Handle errors
+    print('Error saving the quiz: $e');
+    rethrow;
   }
-
+}
 
   Future<List<Map<String, dynamic>>> fetchQuizzes() async {
     try {

@@ -41,6 +41,7 @@ dependencies:
   super_drag_and_drop: ^0.7.2
   image_picker: ^1.1.2
   screenshot: ^3.0.0
+  qr_flutter : ^4.1.0 
 
 
 dev_dependencies:
