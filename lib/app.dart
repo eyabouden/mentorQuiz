@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mentor_quiz/my_quizzes_page.dart';
 
 import 'home_page.dart';
 import 'create_quiz_page.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/create-quiz': (context) => CreateQuizPage(),
+        '/my-quiz': (context) => MyQuizzesPage(),
         '/join-quiz': (context) => JoinQuizPage(),
       },
 

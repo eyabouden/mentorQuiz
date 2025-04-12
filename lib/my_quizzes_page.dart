@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'quiz_edit_page.dart';
+import 'create_quiz_page.dart'; // Import the create quiz page
 
 class MyQuizzesPage extends StatefulWidget {
   @override
@@ -53,7 +54,7 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
               itemBuilder: (context, index) {
                 var quiz = _quizzes[index];
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   child: ListTile(
                     title: Text(quiz['title'] ?? 'Untitled Quiz'),
                     subtitle: Text("Created on: ${quiz['createdAt'] ?? 'N/A'}"),
@@ -69,6 +70,20 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateQuizPage()),
+          ).then((_) {
+            // Refresh quiz list when returning from create page
+            _fetchQuizzes();
+          });
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        tooltip: 'Create New Quiz',
+      ),
     );
   }
 }

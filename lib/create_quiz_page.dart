@@ -233,15 +233,24 @@ void showQuizPopup(String quizName, String quizId) {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 8.0), // Padding à droite pour le bouton Quitter
-            child: TextButton(
-              onPressed: () {
-                // Logique pour quitter l'application
-                print("Quitter app");
-              },
-              child: Text("Quitter", style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)), // Texte en noir
+          padding: const EdgeInsets.only(right: 8.0),
+          child: TextButton(
+            onPressed: () {
+              // Navigate to MyQuizzes page
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => MyQuizzesPage()),
+              );
+            },
+            child: Text(
+              "Quitter", 
+              style: TextStyle(
+                color: Colors.black, 
+                fontSize: 16, 
+                fontWeight: FontWeight.bold
+              )
             ),
           ),
+        ),
           Padding(
             padding: const EdgeInsets.only(right: 50.0), // Padding à droite pour le bouton Enregistrer
             child: TextButton(
@@ -432,32 +441,48 @@ void showQuizPopup(String quizName, String quizId) {
                                       ),
                                       SizedBox(height: 10),
                                       // Options de réponse en fonction du type de question
-                                      _slides[_selectedSlideIndex]["questionType"] == 'Multiple Choice'
-                                          ? Column(
-                                              children: [
-                                                for (int i = 1; i <= 4; i++)
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                                    child: TextField(
-                                                  
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          question["option$i"] = value;
-                                                        });
-                                                      },
-                                                      decoration: InputDecoration(
-                                                        labelText: "Option $i",
-                                                        border: OutlineInputBorder(),
-                                                        filled: true,
-                                                        fillColor: Colors.white.withOpacity(0.8),
+                                        _slides[_selectedSlideIndex]["questionType"] == 'Multiple Choice'
+                                        ? Column(
+                                            children: [
+                                              for (int i = 1; i <= 4; i++)
+                                                Padding(
+                                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      // Add radio button for selecting the correct answer
+                                                      Radio<String>(
+                                                        value: 'option$i',
+                                                        groupValue: question["correctAnswer"] ?? '',
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            question["correctAnswer"] = value;
+                                                          });
+                                                        },
                                                       ),
-                                                      controller: TextEditingController(text: question["option$i"])
-                                                      ..selection = TextSelection.fromPosition(TextPosition(offset: question["option$i"].length),),
-                                                      
-                                                    ),
+                                                      // Option text field
+                                                      Expanded(
+                                                        child: TextField(
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              question["option$i"] = value;
+                                                            });
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            labelText: "Option $i",
+                                                            border: OutlineInputBorder(),
+                                                            filled: true,
+                                                            fillColor: Colors.white.withOpacity(0.8),
+                                                          ),
+                                                          controller: TextEditingController(text: question["option$i"])
+                                                            ..selection = TextSelection.fromPosition(TextPosition(offset: question["option$i"]?.length ?? 0)),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                              ],
-                                            )
+                                                ),
+                                            ],
+                                          )
+    
                                           : Column(
                                               children: [
                                                 // Option Vrai

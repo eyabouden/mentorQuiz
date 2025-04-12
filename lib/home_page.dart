@@ -52,7 +52,7 @@ class HomePage extends StatelessWidget {
                   User? user = await _authService.signInWithGoogle();
                   if (user != null) {
                     // Navigate to the Create Quiz page
-                    Navigator.pushNamed(context, '/create-quiz');
+                    Navigator.pushNamed(context, '/my-quiz');
                   } else {
                     print('Google sign-in failed');
                   }
