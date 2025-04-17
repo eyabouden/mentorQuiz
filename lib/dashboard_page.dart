@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'create_quiz_page.dart';
-import 'my_quizzes_page.dart';
-import 'join_quiz_page.dart';
+import 'screens/admin/create_quiz_page.dart';
+import 'screens/admin/my_quizzes_page.dart';
+import 'screens/participant/join_quiz_page.dart';
 import 'services/auth_service.dart';
 
 class DashboardPage extends StatelessWidget {
