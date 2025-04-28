@@ -18,97 +18,102 @@ class _JoinQuizPageState extends State<JoinQuizPage> {
   bool _isLoading = false;
 
   void _joinQuiz() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  String username = _usernameController.text.trim();
-  String code = _codeController.text.trim().toUpperCase();
+    String username = _usernameController.text.trim();
+    String code = _codeController.text.trim().toUpperCase();
 
-  try {
-    // S'authentifier anonymement pour avoir les permissions nécessaires
-    if (FirebaseAuth.instance.currentUser == null) {
-      await FirebaseAuth.instance.signInAnonymously();
-    }
+    try {
+      // S'authentifier anonymement pour avoir les permissions nécessaires
+      if (FirebaseAuth.instance.currentUser == null) {
+        await FirebaseAuth.instance.signInAnonymously();
+      }
 
-    // Rechercher le quiz avec ce code de participation
-    QuerySnapshot quizQuery = await FirebaseFirestore.instance
-        .collection('quizzes')
-        .where('participationCode', isEqualTo: code)
-        .limit(1)
-        .get();
+      // Rechercher le quiz avec ce code de participation
+      QuerySnapshot quizQuery = await FirebaseFirestore.instance
+          .collection('quizzes')
+          .where('participationCode', isEqualTo: code)
+          .limit(1)
+          .get();
 
-    if (quizQuery.docs.isEmpty) {
-      _showError("Code de participation invalide.");
-      return;
-    }
+      if (quizQuery.docs.isEmpty) {
+        _showError("Code de participation invalide.");
+        return;
+      }
 
-    DocumentSnapshot quizDoc = quizQuery.docs.first;
-    String quizId = quizDoc.id;
+      DocumentSnapshot quizDoc = quizQuery.docs.first;
+      String quizId = quizDoc.id;
 
-    // Rechercher une session active pour ce quiz
-    QuerySnapshot sessionQuery = await FirebaseFirestore.instance
-        .collection('quizSessions')
-        .where('quizId', isEqualTo: quizId)
-        .orderBy('createdAt', descending: true)
-        .limit(1)
-        .get();
+      // Rechercher une session active pour ce quiz
+      QuerySnapshot sessionQuery = await FirebaseFirestore.instance
+          .collection('quizSessions')
+          .where('quizId', isEqualTo: quizId)
+          .orderBy('createdAt', descending: true)
+          .limit(1)
+          .get();
 
-    if (sessionQuery.docs.isEmpty) {
-      _showError("Aucune session active trouvée pour ce quiz.");
-      return;
-    }
+      if (sessionQuery.docs.isEmpty) {
+        _showError("Aucune session active trouvée pour ce quiz.");
+        return;
+      }
 
-    DocumentSnapshot sessionDoc = sessionQuery.docs.first;
-    QuizSession session = QuizSession.fromFirestore(sessionDoc);
-    
-    // Vérifier si la session est en attente de participants
-    if (session.state != QuestionState.waitingForParticipants) {
-      _showError("Ce quiz a déjà commencé.");
-      return;
-    }
+      DocumentSnapshot sessionDoc = sessionQuery.docs.first;
+      QuizSession session = QuizSession.fromFirestore(sessionDoc);
+      
+      // Vérifier si le nom d'utilisateur est déjà pris
+      bool usernameExists = session.participants.any((p) => p.username.toLowerCase() == username.toLowerCase());
+      if (usernameExists) {
+        _showError("Ce nom d'utilisateur est déjà utilisé. Veuillez en choisir un autre.");
+        return;
+      }
 
-    // Vérifier si le nom d'utilisateur est déjà pris
-    bool usernameExists = session.participants.any((p) => p.username.toLowerCase() == username.toLowerCase());
-    if (usernameExists) {
-      _showError("Ce nom d'utilisateur est déjà utilisé. Veuillez en choisir un autre.");
-      return;
-    }
+      // Créer un nouveau participant
+      var participantId = const Uuid().v4();
+      Participant newParticipant = Participant(
+        id: participantId,
+        username: username,
+        iconUrl: "", // ou générer une URL d'icône aléatoire
+        totalScore: 0,
+      );
 
-    // Créer un nouveau participant
-    var participantId = const Uuid().v4();
-    Participant newParticipant = Participant(
-      id: participantId,
-      username: username,
-      iconUrl: "", // ou générer une URL d'icône aléatoire
-      totalScore: 0,
-    );
+      // Utiliser une opération atomique pour ajouter le participant
+      await FirebaseFirestore.instance
+          .collection('quizSessions')
+          .doc(session.id)
+          .update({
+        'participants': FieldValue.arrayUnion([newParticipant.toMap()]),
+      });
 
-    // Utiliser une opération atomique pour ajouter le participant
-    await FirebaseFirestore.instance
-        .collection('quizSessions')
-        .doc(session.id)
-        .update({
-      'participants': FieldValue.arrayUnion([newParticipant.toMap()]),
-    });
+      // Information pour l'utilisateur si le quiz a déjà commencé
+      if (session.state != QuestionState.waitingForParticipants) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Le quiz a déjà commencé. Vous rejoignez à la question active."),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
 
-    // Rediriger vers la page du quiz pour le participant
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ParticipantQuizPage(
-          sessionId: session.id,
-          participantId: participantId,
+      // Rediriger vers la page du quiz pour le participant
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ParticipantQuizPage(
+            sessionId: session.id,
+            participantId: participantId,
+          ),
         ),
-      ),
-    );
-  } catch (e) {
-    print("Erreur détaillée: $e");
-    _showError("Erreur lors de la tentative de connexion : ${e.toString().split(']').last}");
-  } finally {
-    setState(() => _isLoading = false);
+      );
+    } catch (e) {
+      print("Erreur détaillée: $e");
+      _showError("Erreur lors de la tentative de connexion : ${e.toString().split(']').last}");
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
-}
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:mentor_quiz/screens/admin/quiz_edit_page.dart';
 import 'package:mentor_quiz/screens/admin/create_quiz_page.dart';
 import 'package:mentor_quiz/screens/admin/quizcodeandqr.dart';
+import 'package:mentor_quiz/screens/admin/QuizHistoryPage.dart'; // Import de la nouvelle page
 
 class MyQuizzesPage extends StatefulWidget {
   @override
@@ -148,6 +149,18 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
         });
   }
 
+  void _viewQuizHistory(String quizId, String quizTitle) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizHistoryPage(
+          quizId: quizId,
+          quizTitle: quizTitle,
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -271,8 +284,8 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
                 },
               ),
               Divider(height: 1),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Wrap(
+                alignment: WrapAlignment.spaceEvenly,
                 children: [
                   TextButton.icon(
                     icon: Icon(Icons.edit, color: Colors.blue),
@@ -290,6 +303,14 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
                     icon: Icon(Icons.play_arrow, color: Colors.green),
                     label: Text("Démarrer"),
                     onPressed: () => _startQuiz(quiz),
+                  ),
+                  TextButton.icon(
+                    icon: Icon(Icons.history, color: Colors.purple),
+                    label: Text("Historique"),
+                    onPressed: () => _viewQuizHistory(
+                      quiz['id'],
+                      quiz['title'] ?? 'Quiz Sans Titre',
+                    ),
                   ),
                   TextButton.icon(
                     icon: Icon(Icons.delete, color: Colors.red),

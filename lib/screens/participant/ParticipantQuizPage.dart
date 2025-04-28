@@ -355,11 +355,7 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
               
             SizedBox(height: 20),
             
-            Text(
-              "Score actuel: $_totalScore",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
+          
           ],
         ),
       ),
