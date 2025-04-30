@@ -7,6 +7,7 @@ class QuestionList extends StatelessWidget {
   final Function(int) onQuestionSelected;
   final Function(int) onQuestionDeleted;
   final Function() onAddQuestion;
+  final Function(int, int) onQuestionReordered;
 
   const QuestionList({
     Key? key,
@@ -15,6 +16,7 @@ class QuestionList extends StatelessWidget {
     required this.onQuestionSelected,
     required this.onQuestionDeleted,
     required this.onAddQuestion,
+    required this.onQuestionReordered,
   }) : super(key: key);
 
   @override
@@ -25,13 +27,20 @@ class QuestionList extends StatelessWidget {
         Text("Liste des questions", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         SizedBox(height: 20),
         Expanded(
-          child: ListView.builder(
+          child: ReorderableListView.builder(
+            onReorder: (oldIndex, newIndex) {
+              if (oldIndex < newIndex) {
+                newIndex -= 1;
+              }
+              onQuestionReordered(oldIndex, newIndex);
+            },
             itemCount: questions.length,
             itemBuilder: (context, index) {
               Question question = questions[index];
               String questionType = question.options.length > 2 ? 'Multiple Choice' : 'True/False';
               
               return Card(
+                key: ValueKey(question.id),
                 color: selectedQuestionIndex == index ? Colors.blue[100] : Colors.white,
                 margin: EdgeInsets.only(bottom: 8.0),
                 child: ListTile(
@@ -42,9 +51,7 @@ class QuestionList extends StatelessWidget {
                   title: Row(
                     children: [
                       Expanded(
-                        child: Text(question.text.isEmpty 
-                            ? "Question ${index + 1}" 
-                            : question.text),
+                        child: Text("Question ${index + 1}"),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -67,9 +74,15 @@ class QuestionList extends StatelessWidget {
                       ),
                     ],
                   ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => onQuestionDeleted(index),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.drag_handle, color: Colors.grey),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => onQuestionDeleted(index),
+                      ),
+                    ],
                   ),
                   onTap: () => onQuestionSelected(index),
                 ),

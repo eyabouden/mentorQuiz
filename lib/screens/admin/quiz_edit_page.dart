@@ -378,9 +378,9 @@ class _QuizEditPageState extends State<QuizEditPage> {
                                 style: TextStyle(
                                     color: Colors.white)),
                           ),
-                          title: Text(question.text.isEmpty
-                              ? "Question ${index + 1}"
-                              : question.text),
+                          title: Text(
+                               "Question ${index + 1}"
+                             ),
                           trailing: IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () => _removeSlide(index),

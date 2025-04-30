@@ -296,6 +296,12 @@ void _addSlide(String questionType) {
               onQuestionSelected: (index) => setState(() => _selectedQuestionIndex = index),
               onQuestionDeleted: _removeSlide,
               onAddQuestion: _showQuestionTypeDialog,
+              onQuestionReordered: (oldIndex, newIndex) {
+                setState(() {
+                  final Question question = _quizQuestions!.removeAt(oldIndex);
+                  _quizQuestions!.insert(newIndex, question);
+                });
+              },
             ),
           ),
           
