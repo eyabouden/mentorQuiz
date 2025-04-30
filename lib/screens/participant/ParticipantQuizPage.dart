@@ -4,6 +4,8 @@ import 'package:mentor_quiz/models/quizsession.dart';
 import 'package:mentor_quiz/models/reponse.dart';
 import 'package:mentor_quiz/models/participant.dart';
 import 'package:mentor_quiz/models/question.dart';
+import 'package:mentor_quiz/screens/participant/ParticipantResultsPage.dart';
+
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 
@@ -82,12 +84,33 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
             });
           }
         } else if (session.state == QuestionState.displayingResult) {
-        
+          // Navigate to results page when quiz ends
+          if (session.isFinished) {
+            _navigateToResultsPage();
+          }
         }
       } catch (e) {
         _showError("Participant non trouvé dans la session");
       }
     });
+  }
+
+  void _navigateToResultsPage() {
+    // Only navigate once
+    if (_sessionSubscription != null) {
+      _sessionSubscription?.cancel();
+      _sessionSubscription = null;
+      
+      // Navigate to results page
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => ParticipantResultsPage(
+            sessionId: widget.sessionId,
+            participantId: widget.participantId,
+          ),
+        ),
+      );
+    }
   }
 
   void _loadQuizInfo() async {
