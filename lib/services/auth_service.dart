@@ -25,10 +25,23 @@ class AuthService {
     }
   }
 
-  // Méthode pour se déconnecter
-  Future<void> signOut() async {
-    await _googleSignIn.signOut();
-    await _auth.signOut();
+ Future<void> signOut() async {
+    try {
+      // Vérifier si l'utilisateur s'est connecté avec Google
+      final isSignedInWithGoogle = await _googleSignIn.isSignedIn();
+      
+      // Déconnecter de Google s'il était connecté avec Google
+      if (isSignedInWithGoogle) {
+        await _googleSignIn.signOut();
+      }
+      
+      // Déconnecter de Firebase Auth en dernier
+      await _auth.signOut();
+    } catch (e) {
+      print("Erreur lors de la déconnexion: $e");
+      // Essayer de déconnecter uniquement Firebase Auth en cas d'erreur
+      await _auth.signOut();
+    }
   }
 
   // Getter pour obtenir l'utilisateur actuel

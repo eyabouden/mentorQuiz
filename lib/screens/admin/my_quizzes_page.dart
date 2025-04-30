@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:mentor_quiz/screens/admin/quiz_edit_page.dart';
 import 'package:mentor_quiz/screens/admin/create_quiz_page.dart';
 import 'package:mentor_quiz/screens/admin/quizcodeandqr.dart';
+import 'package:mentor_quiz/screens/admin/QuizHistoryPage.dart'; // Import de la nouvelle page
+import 'package:mentor_quiz/services/auth_service.dart'; // Import du service d'authentification
 
 class MyQuizzesPage extends StatefulWidget {
   @override
@@ -15,6 +17,7 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
   List<Map<String, dynamic>> _quizzes = [];
   bool _isLoading = true;
   String? _errorMessage;
+  final AuthService _authService = AuthService();
 
   void _fetchQuizzes() async {
     setState(() {
@@ -22,7 +25,7 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
       _errorMessage = null;
     });
 
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
+    String? userId = _authService.currentUserId;
     if (userId != null) {
       try {
         var quizData = await FirebaseFirestore.instance
@@ -148,6 +151,61 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
         });
   }
 
+  void _viewQuizHistory(String quizId, String quizTitle) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizHistoryPage(
+          quizId: quizId,
+          quizTitle: quizTitle,
+        ),
+      ),
+    );
+  }
+  
+  // Fonction pour se déconnecter
+  void _signOut() async {
+    try {
+      await _authService.signOut(); // Utilise le service d'authentification
+      // Afficher un message de confirmation
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Déconnexion réussie")),
+      );
+      // Navigation vers la page de connexion ou d'accueil
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);// Ajustez selon votre structure de navigation
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors de la déconnexion: $e")),
+      );
+    }
+  }
+
+  // Confirmer la déconnexion
+  void _confirmSignOut() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Déconnexion"),
+          content: Text("Êtes-vous sûr de vouloir vous déconnecter?"),
+          actions: [
+            TextButton(
+              child: Text("Annuler"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text("Déconnexion"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _signOut();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -165,6 +223,12 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
             icon: Icon(Icons.refresh),
             onPressed: _fetchQuizzes,
             tooltip: 'Rafraîchir',
+          ),
+          // Bouton de déconnexion dans l'AppBar
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _confirmSignOut,
+            tooltip: 'Déconnexion',
           ),
         ],
       ),
@@ -229,6 +293,13 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
                 ).then((_) => _fetchQuizzes());
               },
             ),
+            SizedBox(height: 10),
+            // Bouton de déconnexion également dans le corps lorsqu'il n'y a pas de quiz
+            TextButton.icon(
+              icon: Icon(Icons.logout, color: Colors.red),
+              label: Text("Déconnexion", style: TextStyle(color: Colors.red)),
+              onPressed: _confirmSignOut,
+            ),
           ],
         ),
       );
@@ -271,8 +342,8 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
                 },
               ),
               Divider(height: 1),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Wrap(
+                alignment: WrapAlignment.spaceEvenly,
                 children: [
                   TextButton.icon(
                     icon: Icon(Icons.edit, color: Colors.blue),
@@ -290,6 +361,14 @@ class _MyQuizzesPageState extends State<MyQuizzesPage> {
                     icon: Icon(Icons.play_arrow, color: Colors.green),
                     label: Text("Démarrer"),
                     onPressed: () => _startQuiz(quiz),
+                  ),
+                  TextButton.icon(
+                    icon: Icon(Icons.history, color: Colors.purple),
+                    label: Text("Historique"),
+                    onPressed: () => _viewQuizHistory(
+                      quiz['id'],
+                      quiz['title'] ?? 'Quiz Sans Titre',
+                    ),
                   ),
                   TextButton.icon(
                     icon: Icon(Icons.delete, color: Colors.red),

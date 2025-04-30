@@ -1,11 +1,11 @@
-import 'dart:async'; // Make sure this import is included
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mentor_quiz/models/quiz.dart';
 import 'package:mentor_quiz/models/question.dart';
 import 'package:mentor_quiz/models/quizsession.dart';
-import 'package:mentor_quiz/models/reponse.dart'; // Ensure the correct import is used for Response (not Answer)
-import 'package:mentor_quiz/screens/admin/ResultPage.dart'; // Correct import for ResultPage
+import 'package:mentor_quiz/models/reponse.dart';
+import 'package:mentor_quiz/screens/admin/ResultPage.dart';
 
 class QuizPresentationPage extends StatefulWidget {
   final String quizId;
@@ -26,9 +26,9 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
   int currentQuestionIndex = 0;
   bool isLoading = true;
   QuizSession? session;
-  Map<String, Map<String, int>> participantScores = {};
+  Map<String, Map<String, dynamic>> participantScores = {};
   late Stream<QuerySnapshot> responsesStream;
-  late StreamSubscription responsesSubscription;
+  StreamSubscription? responsesSubscription;
   bool allParticipantsAnswered = false;
 
   @override
@@ -40,7 +40,7 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
 
   @override
   void dispose() {
-    responsesSubscription.cancel();
+    responsesSubscription?.cancel();
     super.dispose();
   }
 
@@ -91,6 +91,10 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
   }
 
   void _listenToResponses() {
+    if (questions.isEmpty || currentQuestionIndex >= questions.length) {
+      return;
+    }
+    
     responsesStream = FirebaseFirestore.instance
         .collection('responses')
         .where('sessionId', isEqualTo: widget.sessionId)
@@ -98,11 +102,11 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
         .snapshots();
 
     responsesSubscription = responsesStream.listen((snapshot) {
-      if (session == null) return;
+      if (session == null || !mounted) return;
 
       final responses = snapshot.docs.map((doc) => Response.fromFirestore(doc)).toList();
 
-      Map<String, Map<String, int>> scores = {};
+      Map<String, Map<String, dynamic>> scores = {};
 
       for (var response in responses) {
         if (!scores.containsKey(response.participantId)) {
@@ -111,22 +115,20 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
             'questionCount': 0,
           };
         }
-        scores[response.participantId]!['score'] =
-            (scores[response.participantId]!['score'] ?? 0) + response.score.toInt(); // Cast to int here
-        scores[response.participantId]!['questionCount'] =
-            (scores[response.participantId]!['questionCount'] ?? 0) + 1;
+        scores[response.participantId]!['score'] = 
+            (scores[response.participantId]!['score'] as int) + response.score.toInt();
+        scores[response.participantId]!['questionCount'] = 
+            (scores[response.participantId]!['questionCount'] as int) + 1;
       }
 
-      if (mounted) {
-        setState(() {
-          participantScores = scores;
-          allParticipantsAnswered = session!.participants.every(
-            (participant) =>
-                scores.containsKey(participant.id) &&
-                scores[participant.id]!['questionCount']! > 0,
-          );
-        });
-      }
+      setState(() {
+        participantScores = scores;
+        allParticipantsAnswered = session!.participants.every(
+          (participant) =>
+              scores.containsKey(participant.id) &&
+              scores[participant.id]!['questionCount']! > 0,
+        );
+      });
     });
   }
 
@@ -144,7 +146,7 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
       return;
     }
 
-    responsesSubscription.cancel();
+    responsesSubscription?.cancel();
 
     setState(() {
       currentQuestionIndex++;
@@ -182,7 +184,7 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => ResultPage( // Use ResultPage, not QuizResultPage
+            builder: (context) => QuizResultsPage(
               quizId: widget.quizId,
               sessionId: widget.sessionId,
             ),
@@ -198,8 +200,8 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
   Widget build(BuildContext context) {
     if (isLoading || session == null) {
       return Scaffold(
-        appBar: AppBar(title: Text("Chargement...")),
-        body: Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: const Text("Chargement...")),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -216,41 +218,35 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
           children: [
             Text(
               currentQuestion.text,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ...currentQuestion.options.map((option) {
               return Container(
-                margin: EdgeInsets.only(bottom: 10),
-                padding: EdgeInsets.all(15),
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: option.id == currentQuestion.correctOptionId
-                      ? Colors.green.shade100
-                      : Colors.grey.shade200,
+                  color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: option.id == currentQuestion.correctOptionId
-                        ? Colors.green
-                        : Colors.grey.shade400,
+                    color: Colors.grey.shade400,
                   ),
                 ),
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(option.text, style: TextStyle(fontSize: 18)),
+                      child: Text(option.text, style: const TextStyle(fontSize: 18)),
                     ),
-                    if (option.id == currentQuestion.correctOptionId)
-                      Icon(Icons.check_circle, color: Colors.green),
                   ],
                 ),
               );
             }).toList(),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Text(
               "Participants ayant répondu: ${participantScores.length}/${session!.participants.length}",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: session!.participants.length,
@@ -260,29 +256,31 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
 
                   return ListTile(
                     leading: CircleAvatar(
-                      child: Text(participant.username[0].toUpperCase()),
+                      child: Text(participant.username.isNotEmpty 
+                          ? participant.username[0].toUpperCase() 
+                          : "?"),
                     ),
                     title: Text(participant.username),
                     trailing: hasAnswered
-                        ? Icon(Icons.check_circle, color: Colors.green)
-                        : Icon(Icons.hourglass_empty, color: Colors.orange),
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : const Icon(Icons.hourglass_empty, color: Colors.orange),
                   );
                 },
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: allParticipantsAnswered ? _goToNextQuestion : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
                 child: Text(
                   currentQuestionIndex >= questions.length - 1
                       ? "Terminer le Quiz"
                       : "Question suivante",
-                  style: TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
             ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Ensure this import exists
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mentor_quiz/models/quizsession.dart';
 import 'package:mentor_quiz/models/reponse.dart';
 import 'package:mentor_quiz/models/participant.dart';
@@ -190,7 +190,8 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
           return Participant(
             id: p.id,
             username: p.username,
-            iconUrl: p.iconUrl,
+            avatar: p.avatar,
+            avatarColor: p.avatarColor,
             totalScore: p.totalScore + gainedScore,
           );
         }
@@ -206,7 +207,7 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
       });
 
       // Enregistrer la réponse
-           final response = Response(
+      final response = Response(
           id: const Uuid().v4(),
           sessionId: widget.sessionId,
           questionId: question.id,
@@ -214,7 +215,7 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
           answerId: answerId,
           score: gainedScore,
           submittedAt: DateTime.now(),
-          isCorrect: isCorrect, // Assurez-vous de passer cette valeur ici
+          isCorrect: isCorrect,
         );
 
       await FirebaseFirestore.instance
@@ -230,8 +231,6 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
       });
     }
   }
-
- 
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -354,12 +353,6 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
               ),
               
             SizedBox(height: 20),
-            
-            Text(
-              "Score actuel: $_totalScore",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
           ],
         ),
       ),
