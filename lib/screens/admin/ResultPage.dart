@@ -55,7 +55,11 @@ class _QuizResultsPageState extends State<QuizResultsPage> {
       
       if (quizDoc.exists) {
         _quiz = Quiz.fromFirestore(quizDoc);
-        _totalQuestions = _quiz!.questions?.length ?? 0;
+        // Only count questions that are not ranking slides
+        _totalQuestions = _quiz!.questions?.where((q) => 
+          q.questionType != 'Ranking' && 
+          !q.isLeaderboard
+        ).length ?? 0;
       }
 
       // Load session

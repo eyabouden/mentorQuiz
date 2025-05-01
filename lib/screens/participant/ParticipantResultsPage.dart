@@ -84,7 +84,11 @@ class _ParticipantResultsPageState extends State<ParticipantResultsPage> {
 
       final quizData = quizDoc.data() as Map<String, dynamic>;
       final questions = quizData['questions'] as List<dynamic>;
-      final totalQuestions = questions.length;
+      // Only count questions that are not ranking slides
+      final totalQuestions = questions.where((q) => 
+        q['questionType'] != 'Ranking' && 
+        (q['isLeaderboard'] == null || q['isLeaderboard'] == false)
+      ).length;
 
       // Get participant's responses to calculate correct answers
       final responsesSnapshot = await FirebaseFirestore.instance

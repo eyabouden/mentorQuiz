@@ -25,9 +25,9 @@ class QuestionEditor extends StatelessWidget {
           padding: EdgeInsets.all(20),
           margin: EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.orange.withOpacity(0.1),
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.blue.shade300),
+            border: Border.all(color: Colors.orange.shade300),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -35,7 +35,7 @@ class QuestionEditor extends StatelessWidget {
               Icon(
                 Icons.leaderboard,
                 size: 64,
-                color: Colors.blue,
+                color: Colors.orange,
               ),
               SizedBox(height: 20),
               Text(
@@ -43,7 +43,7 @@ class QuestionEditor extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue[800],
+                  color: Colors.orange[800],
                 ),
               ),
               SizedBox(height: 10),
@@ -52,7 +52,7 @@ class QuestionEditor extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.blue[600],
+                  color: Colors.orange[600],
                 ),
               ),
               SizedBox(height: 20),
@@ -61,7 +61,7 @@ class QuestionEditor extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(color: Colors.orange.shade200),
                 ),
                 child: Column(
                   children: [
@@ -113,18 +113,18 @@ class QuestionEditor extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: question.options.length > 2
+                  color: question.questionType == 'Multiple Choice'
                       ? Colors.blue[100] 
                       : Colors.green[100],
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  question.options.length > 2
+                  question.questionType == 'Multiple Choice'
                       ? 'Choix Multiple' 
                       : 'Vrai ou Faux',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: question.options.length > 2
+                    color: question.questionType == 'Multiple Choice'
                         ? Colors.blue[800] 
                         : Colors.green[800],
                   ),

@@ -21,7 +21,9 @@ class QuestionSettingPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Réglages de la Question ${questionIndex + 1}",
+          question.questionType == 'Ranking' 
+              ? "Réglages du Slide de Classement"
+              : "Réglages de la Question ${questionIndex + 1}",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 20),
@@ -34,25 +36,31 @@ class QuestionSettingPanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Type de question",
+                  "Type de slide",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10),
                 Row(
                   children: [
                     Icon(
-                      question.options.length > 2
+                      question.questionType == 'Multiple Choice'
                           ? Icons.format_list_numbered
-                          : Icons.check_circle_outline,
-                      color: question.options.length > 2
+                          : question.questionType == 'True/False'
+                              ? Icons.check_circle_outline
+                              : Icons.leaderboard,
+                      color: question.questionType == 'Multiple Choice'
                           ? Colors.blue
-                          : Colors.green,
+                          : question.questionType == 'True/False'
+                              ? Colors.green
+                              : Colors.orange,
                     ),
                     SizedBox(width: 8),
                     Text(
-                      question.options.length > 2
+                      question.questionType == 'Multiple Choice'
                           ? "Choix Multiple"
-                          : "Vrai ou Faux",
+                          : question.questionType == 'True/False'
+                              ? "Vrai ou Faux"
+                              : "Classement",
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
@@ -61,82 +69,84 @@ class QuestionSettingPanel extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 20),
-        Card(
-          color: Colors.white,
-          elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Temps par question",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.timer, color: Colors.orange),
-                        SizedBox(width: 8),
-                        Text(
-                          "${question.timeAllowed} secondes",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () => _showTimeEditDialog(context),
-                      icon: Icon(Icons.edit, size: 16),
-                      tooltip: "Modifier le temps",
-                    ),
-                  ],
-                ),
-              ],
+        if (question.questionType != 'Ranking') ...[
+          SizedBox(height: 20),
+          Card(
+            color: Colors.white,
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Temps par question",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.timer, color: Colors.orange),
+                          SizedBox(width: 8),
+                          Text(
+                            "${question.timeAllowed} secondes",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () => _showTimeEditDialog(context),
+                        icon: Icon(Icons.edit, size: 16),
+                        tooltip: "Modifier le temps",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 20),
-        Card(
-          color: Colors.white,
-          elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Points par question",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber),
-                        SizedBox(width: 8),
-                        Text(
-                          "10 points",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () => _showPointsEditDialog(context),
-                      icon: Icon(Icons.edit, size: 16),
-                      tooltip: "Modifier les points",
-                    ),
-                  ],
-                ),
-              ],
+          SizedBox(height: 20),
+          Card(
+            color: Colors.white,
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Points par question",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.amber),
+                          SizedBox(width: 8),
+                          Text(
+                            "${question.points} points",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () => _showPointsEditDialog(context),
+                        icon: Icon(Icons.edit, size: 16),
+                        tooltip: "Modifier les points",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }

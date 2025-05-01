@@ -18,7 +18,7 @@ class ParticipantQuizPage extends StatefulWidget {
   @override
   _ParticipantQuizPageState createState() => _ParticipantQuizPageState();
 }
-
+ 
 class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
   QuizSession? _session;
   Participant? _participant;
@@ -125,8 +125,13 @@ class _ParticipantQuizPageState extends State<ParticipantQuizPage> {
         
         if (quizData != null && quizData.containsKey('questions')) {
           final questionsList = quizData['questions'] as List;
+          // Only count questions that are not ranking slides
+          final actualQuestions = questionsList.where((q) => 
+            q['questionType'] != 'Ranking' && 
+            (q['isLeaderboard'] == null || q['isLeaderboard'] == false)
+          ).length;
           setState(() {
-            _totalQuestions = questionsList.length;
+            _totalQuestions = actualQuestions;
           });
         }
       }
