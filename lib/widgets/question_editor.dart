@@ -19,6 +19,85 @@ class QuestionEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (question.questionType == 'Ranking') {
+      return Center(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          margin: EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.orange.shade300),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.leaderboard,
+                size: 64,
+                color: Colors.orange,
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Slide de Classement",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange[800],
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Ce slide affichera automatiquement le classement en temps réel\ndes participants pendant le quiz.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.orange[600],
+                ),
+              ),
+              SizedBox(height: 20),
+              Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.yellow[700],
+                        child: Text("1", style: TextStyle(color: Colors.white)),
+                      ),
+                      title: Text("Participant 1"),
+                      trailing: Text("1000 pts"),
+                    ),
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.grey[400],
+                        child: Text("2", style: TextStyle(color: Colors.white)),
+                      ),
+                      title: Text("Participant 2"),
+                      trailing: Text("800 pts"),
+                    ),
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.orange[700],
+                        child: Text("3", style: TextStyle(color: Colors.white)),
+                      ),
+                      title: Text("Participant 3"),
+                      trailing: Text("600 pts"),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,18 +113,18 @@ class QuestionEditor extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: question.options.length > 2
+                  color: question.questionType == 'Multiple Choice'
                       ? Colors.blue[100] 
                       : Colors.green[100],
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  question.options.length > 2
+                  question.questionType == 'Multiple Choice'
                       ? 'Choix Multiple' 
                       : 'Vrai ou Faux',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: question.options.length > 2
+                    color: question.questionType == 'Multiple Choice'
                         ? Colors.blue[800] 
                         : Colors.green[800],
                   ),

@@ -37,7 +37,7 @@ class QuestionList extends StatelessWidget {
             itemCount: questions.length,
             itemBuilder: (context, index) {
               Question question = questions[index];
-              String questionType = question.options.length > 2 ? 'Multiple Choice' : 'True/False';
+              String questionType = question.questionType;
               
               return Card(
                 key: ValueKey(question.id),
@@ -45,30 +45,43 @@ class QuestionList extends StatelessWidget {
                 margin: EdgeInsets.only(bottom: 8.0),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Text("${index + 1}", style: TextStyle(color: Colors.white)),
+                    backgroundColor: questionType == 'Ranking' ? Colors.orange : Colors.blue,
+                    child: Text(
+                      questionType == 'Ranking' ? "🏆" : "${index + 1}",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                   title: Row(
                     children: [
                       Expanded(
-                        child: Text("Question ${index + 1}"),
+                        child: Text(
+                          questionType == 'Ranking' ? "Slide de Classement" : "Question ${index + 1}",
+                        ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: questionType == 'Multiple Choice' 
                               ? Colors.blue[100] 
-                              : Colors.green[100],
+                              : questionType == 'True/False'
+                                  ? Colors.green[100]
+                                  : Colors.orange[100],
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          questionType == 'Multiple Choice' ? 'QCM' : 'V/F',
+                          questionType == 'Multiple Choice' 
+                              ? 'QCM' 
+                              : questionType == 'True/False'
+                                  ? 'V/F'
+                                  : '🏆',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                             color: questionType == 'Multiple Choice' 
                                 ? Colors.blue[800] 
-                                : Colors.green[800],
+                                : questionType == 'True/False'
+                                    ? Colors.green[800]
+                                    : Colors.orange[800],
                           ),
                         ),
                       ),

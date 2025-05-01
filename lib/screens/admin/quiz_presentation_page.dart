@@ -6,6 +6,7 @@ import 'package:mentor_quiz/models/question.dart';
 import 'package:mentor_quiz/models/quizsession.dart';
 import 'package:mentor_quiz/models/reponse.dart';
 import 'package:mentor_quiz/screens/admin/ResultPage.dart';
+import 'package:mentor_quiz/widgets/ranking_display.dart';
 
 class QuizPresentationPage extends StatefulWidget {
   final String quizId;
@@ -213,79 +214,106 @@ class _QuizPresentationPageState extends State<QuizPresentationPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              currentQuestion.text,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ...currentQuestion.options.map((option) {
-              return Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Colors.grey.shade400,
+        child: currentQuestion.questionType == 'Ranking'
+            ? Column(
+                children: [
+                  Expanded(
+                    child: RankingDisplay(
+                      participants: session!.participants,
+                      height: MediaQuery.of(context).size.height * 0.8,
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(option.text, style: const TextStyle(fontSize: 18)),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _goToNextQuestion,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      ),
+                      child: Text(
+                        currentQuestionIndex >= questions.length - 1
+                            ? "Terminer le Quiz"
+                            : "Question suivante",
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
-            const SizedBox(height: 30),
-            Text(
-              "Participants ayant répondu: ${participantScores.length}/${session!.participants.length}",
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: session!.participants.length,
-                itemBuilder: (context, index) {
-                  final participant = session!.participants[index];
-                  final hasAnswered = participantScores.containsKey(participant.id);
+                  ),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    currentQuestion.text,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  ...currentQuestion.options.map((option) {
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(option.text, style: const TextStyle(fontSize: 18)),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  const SizedBox(height: 30),
+                  Text(
+                    "Participants ayant répondu: ${participantScores.length}/${session!.participants.length}",
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: session!.participants.length,
+                      itemBuilder: (context, index) {
+                        final participant = session!.participants[index];
+                        final hasAnswered = participantScores.containsKey(participant.id);
 
-                  return ListTile(
-                    leading: CircleAvatar(
-                      child: Text(participant.username.isNotEmpty 
-                          ? participant.username[0].toUpperCase() 
-                          : "?"),
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Text(participant.username.isNotEmpty 
+                                ? participant.username[0].toUpperCase() 
+                                : "?"),
+                          ),
+                          title: Text(participant.username),
+                          trailing: hasAnswered
+                              ? const Icon(Icons.check_circle, color: Colors.green)
+                              : const Icon(Icons.hourglass_empty, color: Colors.orange),
+                        );
+                      },
                     ),
-                    title: Text(participant.username),
-                    trailing: hasAnswered
-                        ? const Icon(Icons.check_circle, color: Colors.green)
-                        : const Icon(Icons.hourglass_empty, color: Colors.orange),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: allParticipantsAnswered ? _goToNextQuestion : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      ),
+                      child: Text(
+                        currentQuestionIndex >= questions.length - 1
+                            ? "Terminer le Quiz"
+                            : "Question suivante",
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: allParticipantsAnswered ? _goToNextQuestion : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                ),
-                child: Text(
-                  currentQuestionIndex >= questions.length - 1
-                      ? "Terminer le Quiz"
-                      : "Question suivante",
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

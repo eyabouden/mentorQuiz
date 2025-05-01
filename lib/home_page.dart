@@ -133,7 +133,7 @@ class HomePage extends StatelessWidget {
                   
                   SizedBox(height: 40),
                   
-                                  // Statistics Section with real-time data
+                  // Statistics Section with real-time data
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance.collection('quizzes').snapshots(),
                     builder: (context, quizzesSnapshot) {
@@ -141,70 +141,79 @@ class HomePage extends StatelessWidget {
                       
                       // Count unique quiz creators
                       Set<String> uniqueCreators = {};
+                      // Count total questions
+                      int totalQuestions = 0;
+                      
                       if (quizzesSnapshot.hasData) {
                         for (var doc in quizzesSnapshot.data!.docs) {
                           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
                           if (data['userId'] != null) {
                             uniqueCreators.add(data['userId']);
                           }
+                          // Count questions in each quiz
+                          if (data['questions'] != null) {
+                            List<dynamic> questions = data['questions'];
+                            totalQuestions += questions.length;
+                          }
                         }
                       }
                       
-                      return StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('quizSessions').snapshots(),
-                        builder: (context, sessionsSnapshot) {
-                          // Count unique anonymous participants
-                          Set<String> anonymousParticipants = {};
-                          
-                          if (sessionsSnapshot.hasData) {
-                            for (var doc in sessionsSnapshot.data!.docs) {
-                              Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                              if (data['participants'] != null) {
-                                List<dynamic> participants = data['participants'];
-                                for (var participant in participants) {
-                                  if (participant['id'] != null) {
-                                    anonymousParticipants.add(participant['id']);
-                                  }
-                                }
-                              }
-                            }
-                          }
-                          
-                          return Container(
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
+                      return Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.blue.shade100,
+                              Colors.blue.shade50,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: Offset(0, 5),
                             ),
-                            child: Row(
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Platform Statistics',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade900,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 _buildStatistic(
                                   quizCount.toString(),
                                   'Quizzes Created',
                                   Icons.quiz,
+                                  Colors.blue.shade700,
                                 ),
                                 _buildStatistic(
                                   uniqueCreators.length.toString(), 
                                   'Quiz Creators',
                                   Icons.person_add,
+                                  Colors.green.shade700,
                                 ),
                                 _buildStatistic(
-                                  anonymousParticipants.length.toString(),
-                                  'Quiz Participants',
-                                  Icons.people_outline,
+                                  totalQuestions.toString(),
+                                  'Total Questions',
+                                  Icons.question_answer,
+                                  Colors.purple.shade700,
                                 ),
                               ],
                             ),
-                          );
-                        },
+                          ],
+                        ),
                       );
                     },
                   ),
@@ -316,44 +325,51 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatistic(String value, String label, IconData icon) {
+  Widget _buildStatistic(String value, String label, IconData icon, Color color) {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                color.withOpacity(0.1),
+                color.withOpacity(0.05),
+              ],
+            ),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(0.1),
-                blurRadius: 4,
-                offset: Offset(0, 2),
+                color: color.withOpacity(0.2),
+                blurRadius: 8,
+                offset: Offset(0, 4),
               ),
             ],
           ),
           child: Icon(
             icon,
-            color: Colors.blue.shade700,
-            size: 22,
+            color: color,
+            size: 28,
           ),
         ),
-        SizedBox(height: 8),
+        SizedBox(height: 12),
         Text(
           value,
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.blue.shade700,
+            color: color,
           ),
         ),
-        SizedBox(height: 4),
+        SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w500,
+            fontSize: 13,
+            color: Colors.grey.shade700,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],

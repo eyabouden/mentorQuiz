@@ -10,6 +10,7 @@ class Question {
   int points;
   String? backgroundImage;
   String questionType;
+  bool isLeaderboard;
 
   Question({
     required this.id,
@@ -20,6 +21,7 @@ class Question {
     this.points = 100,
     this.backgroundImage,
     required this.questionType,
+    this.isLeaderboard = false,
   });
 
   factory Question.fromMap(Map<String, dynamic> data) {
@@ -34,6 +36,7 @@ class Question {
       points: data['points'] ?? 100,
       backgroundImage: data['backgroundImage'],
       questionType: data['questionType'],
+       isLeaderboard: data['isLeaderboard'] ?? false,
     );
   }
 
@@ -55,6 +58,7 @@ class Question {
       'points': points,
       'backgroundImage': backgroundImage,
       'questionType': questionType,
+      'isLeaderboard': isLeaderboard,
     };
   }
 }
