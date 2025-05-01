@@ -6,6 +6,7 @@ class Participant {
   final String username;
   final String avatar;
   final String avatarColor;
+  final String avatarType;
   int totalScore;
   
   Participant({
@@ -13,6 +14,7 @@ class Participant {
     required this.username,
     required this.avatar,
     required this.avatarColor,
+    this.avatarType = 'emoji',
     this.totalScore = 0,
   });
 
@@ -22,6 +24,7 @@ class Participant {
       'username': username,
       'avatar': avatar,
       'avatarColor': avatarColor,
+      'avatarType': avatarType,
       'totalScore': totalScore,
     };
   }
@@ -32,6 +35,7 @@ class Participant {
       username: map['username'] ?? '',
       avatar: map['avatar'] ?? '😀',
       avatarColor: map['avatarColor'] ?? '#2196F3', // Default blue color
+      avatarType: map['avatarType'] ?? 'emoji',
       totalScore: map['totalScore'] ?? 0,
     );
   }
@@ -46,6 +50,7 @@ class Participant {
     String? username,
     String? avatar,
     String? avatarColor,
+    String? avatarType,
     int? totalScore,
   }) {
     return Participant(
@@ -53,6 +58,7 @@ class Participant {
       username: username ?? this.username,
       avatar: avatar ?? this.avatar,
       avatarColor: avatarColor ?? this.avatarColor,
+      avatarType: avatarType ?? this.avatarType,
       totalScore: totalScore ?? this.totalScore,
     );
   }

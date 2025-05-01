@@ -169,7 +169,7 @@ class _QuizResultsPageState extends State<QuizResultsPage> {
       animation = Lottie.asset('assets/animations/star.json', height: 120);
     } else if (percentage >= 50) {
       message = "Bien joué !";
-      animation = Lottie.asset('assets/animations/thumb_up.json', height: 120);
+      animation = Lottie.asset('assets/animations/thump_up.json', height: 120);
     } else {
       message = "Continue tes efforts !";
       animation = Lottie.asset('assets/animations/sad.json', height: 120);

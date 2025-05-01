@@ -65,6 +65,16 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   _addSlide('True/False');
                 },
               ),
+              Divider(),
+              ListTile(
+                leading: Icon(Icons.leaderboard, color: Colors.orange),
+                title: Text("Classement"),
+                subtitle: Text("Affiche le classement actuel"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _addSlide('Ranking');
+                },
+              ),
             ],
           ),
           actions: [
@@ -84,18 +94,34 @@ void _addSlide(String questionType) {
     List<Option> options = [];
     String correctOptionId = '';
 
+    if (questionType == 'Ranking') {
+      // Pour le type Ranking, nous n'avons pas besoin d'options
+      Question newQuestion = Question(
+        id: questionId,
+        text: "Classement",
+        options: [],
+        correctOptionId: '',
+        timeAllowed: 10,
+        questionType: questionType,
+        isLeaderboard: true,
+      );
+      _quizQuestions!.add(newQuestion);
+      _selectedQuestionIndex = _quizQuestions!.length - 1;
+      return;
+    }
+
     if (questionType == 'Multiple Choice') {
       for (int i = 1; i <= 4; i++) {
         String optionId = 'option$i-$questionId';
         options.add(Option(id: optionId, text: ""));
       }
-        correctOptionId = options[0].id;
+      correctOptionId = options[0].id;
     } else if (questionType == 'True/False') {
       String trueId = 'true-$questionId';
       String falseId = 'false-$questionId';
       options.add(Option(id: trueId, text: "Vrai"));
       options.add(Option(id: falseId, text: "Faux"));
-        correctOptionId = trueId;
+      correctOptionId = trueId;
     }
 
     Question newQuestion = Question(
@@ -103,12 +129,13 @@ void _addSlide(String questionType) {
       text: "",
       options: options,
       correctOptionId: correctOptionId,
-        timeAllowed: 30,
-        questionType: questionType,
+      timeAllowed: 30,
+      questionType: questionType,
+      isLeaderboard: false,
     );
 
     _quizQuestions!.add(newQuestion);
-      _selectedQuestionIndex = _quizQuestions!.length - 1;
+    _selectedQuestionIndex = _quizQuestions!.length - 1;
   });
 }
 
