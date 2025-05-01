@@ -253,20 +253,42 @@ class _QuizEditPageState extends State<QuizEditPage> {
       }
       
       // Create a new Quiz object using the existing quizId for updates
-          Quiz updatedQuiz = Quiz(
-          id: widget.quizId,
-          title: _quizTitleController.text,
-          createdAt: DateTime.now(),  // Utilise la date de création existante si tu veux la conserver
-          questions: _quizQuestions,
-          updatedAt: DateTime.now(),
-          userId: FirebaseAuth.instance.currentUser?.uid ?? '', // Ajoute l'ID de l'utilisateur
-        );
+      Quiz updatedQuiz = Quiz(
+        id: widget.quizId,
+        title: _quizTitleController.text,
+        createdAt: DateTime.now(),
+        questions: _quizQuestions,
+        updatedAt: DateTime.now(),
+        userId: currentUser.uid,
+      );
 
-      // Save the quiz to Firestore (merge: true updates only provided fields)
+      // Convert questions to a format that can be stored in Firestore
+      List<Map<String, dynamic>> questionsData = _quizQuestions.map((question) {
+        return {
+          'id': question.id,
+          'text': question.text,
+          'options': question.options.map((option) => {
+            'id': option.id,
+            'text': option.text,
+          }).toList(),
+          'correctOptionId': question.correctOptionId,
+          'timeAllowed': question.timeAllowed,
+          'questionType': question.questionType,
+          'backgroundImage': question.backgroundImage,
+          'points': question.points,
+        };
+      }).toList();
+
+      // Save the quiz to Firestore
       await FirebaseFirestore.instance
           .collection('quizzes')
           .doc(widget.quizId)
-          .set(updatedQuiz.toFirestore(), SetOptions(merge: true));
+          .set({
+            'title': updatedQuiz.title,
+            'questions': questionsData,
+            'updatedAt': FieldValue.serverTimestamp(),
+            'userId': updatedQuiz.userId,
+          }, SetOptions(merge: true));
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -283,17 +305,34 @@ class _QuizEditPageState extends State<QuizEditPage> {
     }
   }
 
-  void showQuizPopup(String quizName, String quizId) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return QuizPopup(
-          quizName: quizName,
-          quizId: quizId,
-          participationCode: "",
+  void showQuizPopup(String quizName, String quizId) async {
+    try {
+      // Get the quiz document to retrieve the participation code
+      DocumentSnapshot quizDoc = await FirebaseFirestore.instance
+          .collection('quizzes')
+          .doc(quizId)
+          .get();
+
+      if (quizDoc.exists) {
+        Map<String, dynamic> data = quizDoc.data() as Map<String, dynamic>;
+        String participationCode = data['participationCode'] ?? '';
+
+        showDialog(
+          context: context,
+          builder: (context) {
+            return QuizPopup(
+              quizName: quizName,
+              quizId: quizId,
+              participationCode: participationCode,
+            );
+          },
         );
-      },
-    );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors de la récupération du code de participation: $e")),
+      );
+    }
   }
 
   @override
