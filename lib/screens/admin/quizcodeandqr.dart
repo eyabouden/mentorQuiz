@@ -230,7 +230,7 @@ class _QuizAccessPageState extends State<QuizAccessPage> {
                           ),
                           SizedBox(height: 10),
                           Container(
-                            height: 100,
+                            height: 200,
                             width: double.infinity,
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
@@ -239,14 +239,45 @@ class _QuizAccessPageState extends State<QuizAccessPage> {
                             ),
                             child: SingleChildScrollView(
                               child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
+                                spacing: 16,
+                                runSpacing: 16,
+                                alignment: WrapAlignment.center,
                                 children: participants.map((participant) {
-                                  return Chip(
-                                    label: Text(participant.username),
-                                    backgroundColor: Colors.blue.shade100,
-                                    avatar: CircleAvatar(
-                                      child: Text(participant.username[0].toUpperCase()),
+                                  // Convert hex color string to Color object
+                                  Color avatarColor = Color(int.parse(participant.avatarColor.replaceFirst('#', '0xFF')));
+                                  
+                                  return Container(
+                                    width: 80,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: avatarColor.withOpacity(0.2),
+                                            border: Border.all(color: avatarColor, width: 2),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              participant.avatar,
+                                              style: TextStyle(fontSize: 24),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          participant.username,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
                                   );
                                 }).toList(),

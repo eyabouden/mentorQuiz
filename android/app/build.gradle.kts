@@ -45,7 +45,9 @@ android {
 dependencies {
    
     
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+  
+    
 }
 
 flutter {

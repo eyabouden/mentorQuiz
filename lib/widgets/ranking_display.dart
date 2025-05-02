@@ -74,6 +74,8 @@ class RankingDisplay extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
+                      _buildAvatar(participant),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,6 +104,33 @@ class RankingDisplay extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(Participant participant) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Color(int.parse(participant.avatarColor.replaceAll('#', '0xFF'))),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: participant.avatarType == 'emoji'
+            ? Text(
+                participant.avatar,
+                style: TextStyle(fontSize: 24),
+              )
+            : Image.network(
+                participant.avatar,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.person, color: Colors.white);
+                },
+              ),
       ),
     );
   }
