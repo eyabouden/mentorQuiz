@@ -72,5 +72,3 @@ mentorQuiz/
 ## License
 This project was developed for educational purposes at the Higher Institute of Computer Science of Tunis (ISI).
 
----
-*Note: This README is a template. Please update sections with your specific project details.*
