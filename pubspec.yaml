@@ -48,6 +48,7 @@ dependencies:
   flutter_svg: ^2.0.9
   uuid: ^4.3.3
 
+
   # Temporarily removing super_drag_and_drop until we resolve the Android configuration issues
   # super_drag_and_drop: ^0.6.0
 

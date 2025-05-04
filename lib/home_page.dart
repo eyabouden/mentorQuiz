@@ -63,7 +63,7 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'Welcome to Mentor Quiz!',
+                          'Bienvenue sur Mentor Quiz !',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ class HomePage extends StatelessWidget {
                         ),
                         SizedBox(height: 16),
                         Text(
-                          'The ultimate platform for creating and participating in interactive quizzes. Whether you\'re a teacher, student, or just looking for some fun, Mentor Quiz has you covered!',
+                          'La plateforme ultime pour créer et participer à des quiz interactifs. Que vous soyez enseignant, étudiant ou simplement à la recherche de divertissement, Mentor Quiz est là pour vous !',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey.shade700,
@@ -89,7 +89,7 @@ class HomePage extends StatelessWidget {
                   
                   // Features Section
                   Text(
-                    'What would you like to do?',
+                    'Que souhaitez-vous faire ?',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
@@ -101,8 +101,8 @@ class HomePage extends StatelessWidget {
                   // Create Quiz Card
                   _buildFeatureCard(
                     context,
-                    title: 'Create a Quiz',
-                    description: 'Design your own custom quiz with multiple question types, images, and timed responses.',
+                    title: 'Créer un Quiz',
+                    description: 'Concevez votre propre quiz personnalisé avec différents types de questions, des images et des réponses chronométrées.',
                     icon: Icons.create,
                     color: Colors.blue,
                     onTap: () async {
@@ -122,8 +122,8 @@ class HomePage extends StatelessWidget {
                   // Join Quiz Card
                   _buildFeatureCard(
                     context,
-                    title: 'Join a Quiz',
-                    description: 'Enter a quiz code to participate in a live quiz session with real-time feedback.',
+                    title: 'Rejoindre un Quiz',
+                    description: 'Entrez un code de quiz pour participer à une session en direct avec des retours en temps réel.',
                     icon: Icons.group_add,
                     color: Colors.green,
                     onTap: () {
@@ -181,7 +181,7 @@ class HomePage extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              'Platform Statistics',
+                              'Statistiques de la Plateforme',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -194,19 +194,19 @@ class HomePage extends StatelessWidget {
                               children: [
                                 _buildStatistic(
                                   quizCount.toString(),
-                                  'Quizzes Created',
+                                  'Quiz Créés',
                                   Icons.quiz,
                                   Colors.blue.shade700,
                                 ),
                                 _buildStatistic(
                                   uniqueCreators.length.toString(), 
-                                  'Quiz Creators',
+                                  'Créateurs',
                                   Icons.person_add,
                                   Colors.green.shade700,
                                 ),
                                 _buildStatistic(
                                   totalQuestions.toString(),
-                                  'Total Questions',
+                                  'Questions Totales',
                                   Icons.question_answer,
                                   Colors.purple.shade700,
                                 ),
@@ -222,7 +222,7 @@ class HomePage extends StatelessWidget {
                   
                   // Footer with improved styling
                   Text(
-                    'Create and join quizzes with ease.',
+                    'Créez et rejoignez des quiz en toute simplicité.',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey.shade600,
@@ -231,7 +231,7 @@ class HomePage extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '© 2025 Mentor Quiz - All rights reserved.',
+                    '© 2025 Mentor Quiz - Tous droits réservés.',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade500,

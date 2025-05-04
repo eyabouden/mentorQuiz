@@ -6,6 +6,7 @@ import 'package:mentor_quiz/models/quizsession.dart';
 import 'package:mentor_quiz/models/participant.dart';
 import 'package:mentor_quiz/screens/participant/ParticipantQuizPage.dart';
 
+
 class JoinQuizPage extends StatefulWidget {
   @override
   _JoinQuizPageState createState() => _JoinQuizPageState();
@@ -388,6 +389,7 @@ class _JoinQuizPageState extends State<JoinQuizPage> with TickerProviderStateMix
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                 ),
+                
               ],
             ),
           ),

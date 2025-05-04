@@ -9,7 +9,8 @@ import 'package:uuid/uuid.dart';
 // Classe utilitaire pour générer le lien
 class QuizCodeGenerator {
   static String generateQuizLink(String quizId, String accessCode) {
-    return 'https://yourapp.com/quiz/$quizId?code=$accessCode';
+    // Using Android package format to open the installed app
+    return 'package://com.example.mentor_quiz/join?code=$accessCode';
   }
 }
 

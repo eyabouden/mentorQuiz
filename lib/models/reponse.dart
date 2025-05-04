@@ -8,7 +8,7 @@ class Response {
   String answerId;
   int score;
   DateTime submittedAt;
-  bool isCorrect;  // Add isCorrect to track correctness of answer
+  bool isCorrect;  
 
   Response({
     required this.id,
@@ -18,7 +18,7 @@ class Response {
     required this.answerId,
     required this.score,
     required this.submittedAt,
-    required this.isCorrect, // Make sure to handle it
+    required this.isCorrect, 
   });
 
   factory Response.fromFirestore(DocumentSnapshot doc) {
@@ -31,7 +31,7 @@ class Response {
       answerId: data['answerId'],
       score: data['score'],
       submittedAt: (data['submittedAt'] as Timestamp).toDate(),
-      isCorrect: data['isCorrect'] ?? false, // Ensure correct field is present
+      isCorrect: data['isCorrect'] ?? false, 
     );
   }
 
@@ -43,7 +43,7 @@ class Response {
       'answerId': answerId,
       'score': score,
       'submittedAt': Timestamp.fromDate(submittedAt),
-      'isCorrect': isCorrect, // Make sure this gets saved in Firestore
+      'isCorrect': isCorrect, 
     };
   }
 }

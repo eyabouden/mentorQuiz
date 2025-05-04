@@ -34,7 +34,7 @@ class Participant {
       id: map['id'] ?? '',
       username: map['username'] ?? '',
       avatar: map['avatar'] ?? '😀',
-      avatarColor: map['avatarColor'] ?? '#2196F3', // Default blue color
+      avatarColor: map['avatarColor'] ?? '#2196F3', 
       avatarType: map['avatarType'] ?? 'emoji',
       totalScore: map['totalScore'] ?? 0,
     );
